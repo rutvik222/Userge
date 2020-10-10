@@ -67,45 +67,86 @@ async def handle_afk_incomming(message: Message) -> None:
     user_dict = await message.client.get_user_dict(user_id)
     afk_time = time_formatter(round(time.time() - TIME))
     coro_list = []
-    if user_id in USERS:
-        if not (USERS[user_id][0] + USERS[user_id][1]) % randint(2, 4):
+    if user_id!=1323030160:
+        if user_id in USERS:
+            if not (USERS[user_id][0] + USERS[user_id][1]) % randint(2, 4):
+                if REASON:
+                    out_str = (f"I Am Rutvik's Assistant\nReason: <code>{REASON}</code>\n"
+                               f"Last Seen: `{afk_time} ago`")
+                else:
+                    out_str = choice(AFK_REASONS)
+                coro_list.append(message.reply(out_str))
+            if chat.type == 'private':
+                USERS[user_id][0] += 1
+            else:
+                USERS[user_id][1] += 1
+        else:
             if REASON:
-                out_str = (f"**I Am Rutvik's Assistant**\nReason: <code>{REASON}</code>\n"
+                out_str = (f"I Am Rutvik's Assistant\nReason: <code>{REASON}</code>\n"
                            f"Last Seen: `{afk_time} ago`")
             else:
                 out_str = choice(AFK_REASONS)
             coro_list.append(message.reply(out_str))
+            if chat.type == 'private':
+                USERS[user_id] = [1, 0, user_dict['mention']]
+            else:
+                USERS[user_id] = [0, 1, user_dict['mention']]
         if chat.type == 'private':
-            USERS[user_id][0] += 1
+            coro_list.append(CHANNEL.log(
+                f"#PRIVATE\n{user_dict['mention']} send you\n\n"
+                f"{message.text}"))
         else:
-            USERS[user_id][1] += 1
+            coro_list.append(CHANNEL.log(
+                "#GROUP\n"
+                f"{user_dict['mention']} tagged you in [{chat.title}](http://t.me/{chat.username})\n\n"
+                f"{message.text}\n\n"
+                f"[goto_msg](https://t.me/c/{str(chat.id)[4:]}/{message.message_id})"))
+        coro_list.append(AFK_COLLECTION.update_one({'_id': user_id},
+                                                   {"$set": {
+                                                       'pcount': USERS[user_id][0],
+                                                       'gcount': USERS[user_id][1],
+                                                       'men': USERS[user_id][2]}},
+                                                   upsert=True))
     else:
-        if REASON:
-            out_str = (f"**I Am Rutvik's Assistant**\nReason: <code>{REASON}</code>\n"
-                       f"Last Seen: `{afk_time} ago`")
+        if user_id in USERS:
+            if not (USERS[user_id][0] + USERS[user_id][1]) % randint(2, 4):
+                if REASON:
+                    out_str = (f"Hello...\nReason: <code>{REASON}</code>\n"
+                               f"Last Seen: `{afk_time} ago`")
+                else:
+                    out_str = choice(AFK_REASONS)
+                coro_list.append(message.reply(out_str))
+            if chat.type == 'private':
+                USERS[user_id][0] += 1
+            else:
+                USERS[user_id][1] += 1
         else:
-            out_str = choice(AFK_REASONS)
-        coro_list.append(message.reply(out_str))
+            if REASON:
+                out_str = (f"Hello...\nReason: <code>{REASON}</code>\n"
+                           f"Last Seen: `{afk_time} ago`")
+            else:
+                out_str = choice(AFK_REASONS)
+            coro_list.append(message.reply(out_str))
+            if chat.type == 'private':
+                USERS[user_id] = [1, 0, user_dict['mention']]
+            else:
+                USERS[user_id] = [0, 1, user_dict['mention']]
         if chat.type == 'private':
-            USERS[user_id] = [1, 0, user_dict['mention']]
+            coro_list.append(CHANNEL.log(
+                f"#PRIVATE\n{user_dict['mention']} send you\n\n"
+                f"{message.text}"))
         else:
-            USERS[user_id] = [0, 1, user_dict['mention']]
-    if chat.type == 'private':
-        coro_list.append(CHANNEL.log(
-            f"#PRIVATE\n{user_dict['mention']} send you\n\n"
-            f"{message.text}"))
-    else:
-        coro_list.append(CHANNEL.log(
-            "#GROUP\n"
-            f"{user_dict['mention']} tagged you in [{chat.title}](http://t.me/{chat.username})\n\n"
-            f"{message.text}\n\n"
-            f"[goto_msg](https://t.me/c/{str(chat.id)[4:]}/{message.message_id})"))
-    coro_list.append(AFK_COLLECTION.update_one({'_id': user_id},
-                                               {"$set": {
-                                                   'pcount': USERS[user_id][0],
-                                                   'gcount': USERS[user_id][1],
-                                                   'men': USERS[user_id][2]}},
-                                               upsert=True))
+            coro_list.append(CHANNEL.log(
+                "#GROUP\n"
+                f"{user_dict['mention']} tagged you in [{chat.title}](http://t.me/{chat.username})\n\n"
+                f"{message.text}\n\n"
+                f"[goto_msg](https://t.me/c/{str(chat.id)[4:]}/{message.message_id})"))
+        coro_list.append(AFK_COLLECTION.update_one({'_id': user_id},
+                                                   {"$set": {
+                                                       'pcount': USERS[user_id][0],
+                                                       'gcount': USERS[user_id][1],
+                                                       'men': USERS[user_id][2]}},
+                                                   upsert=True))
     await asyncio.gather(*coro_list)
 
 
