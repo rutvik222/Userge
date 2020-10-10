@@ -22,6 +22,7 @@ AFK_COLLECTION = get_collection("AFK")
 IS_AFK = False
 IS_AFK_FILTER = filters.create(lambda _, __, ___: bool(IS_AFK))
 REASON = ''
+LOVE = 'Hello friends'
 TIME = 0.0
 USERS = {}
 
@@ -71,7 +72,7 @@ async def handle_afk_incomming(message: Message) -> None:
         if user_id in USERS:
             if not (USERS[user_id][0] + USERS[user_id][1]) % randint(2, 4):
                 if REASON:
-                    out_str = (f"I Am Rutvik's Assistant\nReason: <code>{REASON}</code>\n"
+                    out_str = (f"**I Am Rutvik's Assistant**\nReason: <code>{REASON}</code>\n"
                                f"Last Seen: `{afk_time} ago`")
                 else:
                     out_str = choice(AFK_REASONS)
@@ -82,7 +83,7 @@ async def handle_afk_incomming(message: Message) -> None:
                 USERS[user_id][1] += 1
         else:
             if REASON:
-                out_str = (f"I Am Rutvik's Assistant\nReason: <code>{REASON}</code>\n"
+                out_str = (f"**I Am Rutvik's Assistant**\nReason: <code>{REASON}</code>\n"
                            f"Last Seen: `{afk_time} ago`")
             else:
                 out_str = choice(AFK_REASONS)
@@ -111,7 +112,7 @@ async def handle_afk_incomming(message: Message) -> None:
         if user_id in USERS:
             if not (USERS[user_id][0] + USERS[user_id][1]) % randint(2, 4):
                 if REASON:
-                    out_str = (f"Hello...\nReason: <code>{REASON}</code>\n"
+                    out_str = (f"**{LOVE}**\nReason: <code>{REASON}</code>\n"
                                f"Last Seen: `{afk_time} ago`")
                 else:
                     out_str = choice(AFK_REASONS)
@@ -122,7 +123,7 @@ async def handle_afk_incomming(message: Message) -> None:
                 USERS[user_id][1] += 1
         else:
             if REASON:
-                out_str = (f"Hello...\nReason: <code>{REASON}</code>\n"
+                out_str = (f"**{LOVE}**\nReason: <code>{REASON}</code>\n"
                            f"Last Seen: `{afk_time} ago`")
             else:
                 out_str = choice(AFK_REASONS)
