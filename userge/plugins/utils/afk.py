@@ -22,7 +22,7 @@ AFK_COLLECTION = get_collection("AFK")
 IS_AFK = False
 IS_AFK_FILTER = filters.create(lambda _, __, ___: bool(IS_AFK))
 REASON = ''
-LOVE = 'Hello friends'
+LOVE = 'Hi...Sorry For Today...😘'
 TIME = 0.0
 USERS = {}
 
@@ -38,7 +38,7 @@ async def _init() -> None:
         USERS.update({_user['_id']:  [_user['pcount'], _user['gcount'], _user['men']]})
 
 
-@userge.on_cmd("love", about={
+@userge.on_cmd("afk", about={
     'header': "Set to AFK mode",
     'description': "Sets your status as AFK. Responds to anyone who tags/PM's.\n"
                    "you telling you are AFK. Switches off AFK when you type back anything.",
@@ -68,7 +68,7 @@ async def handle_afk_incomming(message: Message) -> None:
     user_dict = await message.client.get_user_dict(user_id)
     afk_time = time_formatter(round(time.time() - TIME))
     coro_list = []
-    if user_id!=1323030160:
+    if user_id!=635941621:
         if user_id in USERS:
             if not (USERS[user_id][0] + USERS[user_id][1]) % randint(2, 4):
                 if REASON:
